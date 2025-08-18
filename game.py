@@ -1,22 +1,54 @@
-# Choose the number of players (2 to 4) and roll the dice.
-# If a player rolls 1, they lose automatically and their score resets to 0.
-# The player with the highest score can choose to stay or roll again.
-# The last player who has not rolled a 1 wins.
-
 import random
 import time
 
-playersCount = int(input("How many players do you want to play?(2-4): "))
+playersCount = int(input("How many players? (2-4): "))
+while playersCount < 2 or playersCount > 4:
+    playersCount = int(input("Choose between 2 and 4: "))
 
-if playersCount < 2 or playersCount > 4:
-    playersCount = int(input("Chosee a number between 2 and 4, 2 and 4 included! "))
+scores = [0] * playersCount
 
-player1 = 0
-player2 = 0
-if playersCount == 3:
-    player3 = 0
-elif playersCount == 4:
-    player4=0
+active = [True] * playersCount  
 
-while playersCount>1:
-    pass
+print("\nThe game has started!\n")
+while sum(active) > 1:
+    for i in range(playersCount):
+        if not active[i]:
+            continue
+
+        print(f"\nPlayer {i+1}'s turn.")
+        time.sleep(1)
+
+        dice = random.randint(1, 6)
+
+        if dice == 1:
+            print(f"Player {i+1} rolled 1 and is OUT!")
+            scores[i] = 0
+            active[i] = False
+        else:
+            scores[i] += dice
+            print(f"Rolled: {dice}, total score = {scores[i]}")
+
+            while True:
+                choice = input("Do you want to roll again? (y/n): ").lower()
+                if choice == "y":
+                    dice = random.randint(1, 6)
+                    time.sleep(1)
+                    if dice == 1:
+                        print(f"Player {i+1} rolled 1 and is OUT!")
+                        scores[i] = 0
+                        active[i] = False
+                        break
+                    else:
+                        scores[i] += dice
+                        print(f"Rolled: {dice}, total score = {scores[i]}")
+                elif choice == "n":
+                    print(f"Player {i+1} stays at {scores[i]}")
+                    break
+                else:
+                    print("Invalid choice. Type y or n.")
+
+        if sum(active) == 1:
+            break  
+
+winner = [i+1 for i in range(playersCount) if active[i]][0]
+print(f"\n🏆 Player {winner} wins with {scores[winner-1]} points! 🏆")
